@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกข้อมูลและแสดงตาราง</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<div class="d-flex" style="height: 100vh;">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3" style="width: 250px;">
+        <h3>บันทึกข้อมูล</h3>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white active" href="#formTab">ฟอร์มบันทึกข้อมูล</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="#dataTab">แสดงข้อมูล</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid p-4" style="flex-grow: 1;">
+        <!-- ฟอร์มบันทึกข้อมูล -->
+        <div id="formTab">
+            <h4>กรอกข้อมูล</h4>
+            <form id="dataForm">
+                <!-- ฟอร์มการกรอกข้อมูลต่างๆ -->
+                <div class="mb-3">
+                    <label for="idCard" class="form-label">เลขบัตร ปชช.</label>
+                    <input type="text" class="form-control" id="idCard" required>
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">คำนำหน้าหรือยศ</label>
+                    <input type="text" class="form-control" id="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">ชื่อ</label>
+                    <input type="text" class="form-control" id="firstName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">สกุล</label>
+                    <input type="text" class="form-control" id="lastName" required>
+                </div>
+                <!-- ฟิลด์อื่นๆ ตามที่คุณต้องการ -->
+                <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+            </form>
+        </div>
+
+        <!-- แสดงข้อมูลในตาราง -->
+        <div id="dataTab" style="display:none;">
+            <h4>ข้อมูลที่บันทึก</h4>
+            <table class="table table-bordered" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>เลขบัตร ปชช.</th>
+                        <th>คำนำหน้าหรือยศ</th>
+                        <th>ชื่อ</th>
+                        <th>สกุล</th>
+                        <th>หน่วยเจ้าของเรื่อง</th>
+                        <th>สถานะ</th>
+                        <th>การดำเนินการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ข้อมูลจะถูกแสดงที่นี่ -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // ส่งข้อมูลไปยัง Google Apps Script เมื่อฟอร์มถูกส่ง
+        $('#dataForm').on('submit', function(event) {
+            event.preventDefault();
+
+            var formData = {
+                idCard: $('#idCard').val(),
+                title: $('#title').val(),
+                firstName: $('#firstName').val(),
+                lastName: $('#lastName').val(),
+                // เพิ่มข้อมูลที่เหลือในฟอร์ม
+            };
+
+            $.ajax({
+                url: 'https://script.google.com/macros/s/AKfycby5baH4AErWyPJWppos2W5vNi_WZ2YmCsDMfja6Y4_5gXUDqhfaRrTO3ND4OpsNhuOy/exec', // URL ของ Google Apps Script
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    alert('บันทึกข้อมูลเรียบร้อย!');
+                    loadData();  // โหลดข้อมูลใหม่หลังจากบันทึก
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                }
+            });
+        });
+
+        // ฟังก์ชันสำหรับโหลดข้อมูลจาก Google Sheets
+        function loadData() {
+            $.ajax({
+                url: 'https://script.google.com/macros/s/AKfycby5baH4AErWyPJWppos2W5vNi_WZ2YmCsDMfja6Y4_5gXUDqhfaRrTO3ND4OpsNhuOy/exec', // URL ของ Google Apps Script
+                method: 'GET',
+                success: function(response) {
+                    var tableBody = $('#dataTable tbody');
+                    tableBody.empty(); // ลบข้อมูลเก่า
+                    response.forEach(function(item) {
+                        var row = `<tr>
+                            <td>${item.idCard}</td>
+                            <td>${item.title}</td>
+                            <td>${item.firstName}</td>
+                            <td>${item.lastName}</td>
+                            <td>${item.unit}</td>
+                            <td>${item.status}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editData(${item.id})">แก้ไข</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteData(${item.id})">ลบ</button>
+                            </td>
+                        </tr>`;
+                        tableBody.append(row);
+                    });
+                },
+                error: function() {
+                    alert('ไม่สามารถโหลดข้อมูลได้');
+                }
+            });
+        }
+
+        // เรียกฟังก์ชันโหลดข้อมูลเมื่อหน้าโหลดเสร็จ
+        loadData();
+
+        // ฟังก์ชันการแก้ไขข้อมูล
+        window.editData = function(id) {
+            // เขียนโค้ดแก้ไขข้อมูลที่เลือก
+            alert('แก้ไขข้อมูล: ' + id);
+        };
+
+        // ฟังก์ชันการลบข้อมูล
+        window.deleteData = function(id) {
+            if (confirm('คุณต้องการลบข้อมูลนี้?')) {
+                $.ajax({
+                    url: 'https://script.google.com/macros/s/AKfycby5baH4AErWyPJWppos2W5vNi_WZ2YmCsDMfja6Y4_5gXUDqhfaRrTO3ND4OpsNhuOy/exec', // URL ของ Google Apps Script
+                    method: 'DELETE',
+                    data: { id: id },
+                    success: function() {
+                        alert('ลบข้อมูลเรียบร้อย!');
+                        loadData();  // โหลดข้อมูลใหม่หลังจากลบ
+                    },
+                    error: function() {
+                        alert('ไม่สามารถลบข้อมูลได้');
+                    }
+                });
+            }
+        };
+    });
+</script>
+
+</body>
+</html>
