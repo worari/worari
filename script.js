@@ -1,5 +1,5 @@
 
-const apiUrl = "https://script.google.com/macros/s/AKfycby5baH4AErWyPJWppos2W5vNi_WZ2YmCsDMfja6Y4_5gXUDqhfaRrTO3ND4OpsNhuOy/exec"; // <- ใส่ URL จาก Apps Script
+const apiUrl = "https://script.google.com/macros/s/AKfycby5baH4AErWyPJWppos2W5vNi_WZ2YmCsDMfja6Y4_5gXUDqhfaRrTO3ND4OpsNhuOy/exec";
 
 function loadData() {
   const trackId = document.getElementById("trackId").value.trim();
