@@ -1,0 +1,1 @@
+leave-system/ ├── index.html            # Login/Register/Forgot ├── dashboard.html        # Dashboard + Sidebar ├── form.html             # แบบฟอร์ม + CRUD ├── reports.html          # รายงาน ├── js/ │   ├── firebase-config.js │   ├── auth.js │   ├── crud.js │   ├── upload.js │   ├── pdf.js ├── css/ │   └── tailwind.css ├── firebase.rules ├── firebase.json ├── README.md
