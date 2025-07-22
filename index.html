@@ -1248,94 +1248,144 @@
                 handleAttachmentVisibility(); // เรียกครั้งแรกเมื่อโหลด
                 
                 // จัดการการยื่นฟอร์ม
-                const requireForm = document.getElementById('require-form');
-                requireForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    const submitBtn = e.target.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังบันทึก...';
+               // ในฟังก์ชัน initializeRequireForm
+const requireForm = document.getElementById('require-form');
+requireForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-                    let docRef; // ประกาศ docRef ไว้ด้านนอกเพื่อให้เข้าถึงได้ใน catch
+    // เพิ่มการตรวจสอบความถูกต้องของฟอร์มของ Bootstrap
+    if (!requireForm.checkValidity()) {
+        e.stopPropagation();
+        requireForm.classList.add('was-validated');
+        showAlert('error', 'ข้อมูลไม่สมบูรณ์', 'กรุณากรอกข้อมูลในฟอร์มให้ครบถ้วนและถูกต้อง');
+        return;
+    }
+    requireForm.classList.remove('was-validated'); // ลบ class ออกเมื่อข้อมูลถูกต้อง
 
-                    try {
-                        // --- ขั้นตอนที่ 1: บันทึกข้อมูลเบื้องต้นลง Firestore เพื่อรับ ID ---
-                        const initialFormData = {
-                            requesterId: window.currentUser.uid,
-                            requesterName: window.currentUser.name,
-                            idCard: document.getElementById('req-id-card').value,
-                            title: document.getElementById('req-title').value,
-                            firstName: document.getElementById('req-fname').value,
-                            lastName: document.getElementById('req-lname').value,
-                            affiliation: document.getElementById('req-affiliation').value,
-                            docNo: document.getElementById('req-doc-no').value,
-                            docDate: document.getElementById('req-doc-date').value,
-                            type: document.getElementById('req-type').value,
-                            status: 'รอพิจารณา',
-                            createdAt: window.Timestamp.now(),
-                            history: [{ status: 'รอพิจารณา', date: window.Timestamp.now(), actor: 'system', notes: 'ยื่นเรื่องเข้าระบบ' }],
-                            attachments: {} // เริ่มต้นด้วย object ว่าง
-                        };
-                        
-                        // สร้างเอกสารใน Firestore ก่อน
-                        docRef = await window.addDoc(window.collection(window.db, "requests"), initialFormData);
-                        const requestId = docRef.id;
-                        console.log("Document created with ID: ", requestId);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
 
-                        // --- ขั้นตอนที่ 2: อัปโหลดไฟล์โดยใช้ ID ที่ได้มา ---
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังอัปโหลดไฟล์...';
-                        
-                        const fileInputs = document.querySelectorAll('#attachment-section input[type="file"]');
-                        const attachmentUrls = {};
-                        const uploadPromises = [];
+    let docRef; // ประกาศตัวแปร docRef ไว้ด้านนอก try-catch เพื่อให้เข้าถึงได้ใน catch block
 
-                        for (const input of fileInputs) {
-                            if (input.files.length > 0) {
-                                const file = input.files[0];
-                                // ใช้ requestId ในการสร้าง path เพื่อความปลอดภัย
-                                const fileName = `${input.id}-${file.name}`;
-                                const storageRef = window.ref(window.storage, `requests/${requestId}/${fileName}`);
-                                
-                                // สร้าง Promise สำหรับการอัปโหลดแต่ละไฟล์
-                                const uploadPromise = window.uploadBytes(storageRef, file)
-                                    .then(snapshot => window.getDownloadURL(snapshot.ref))
-                                    .then(downloadURL => {
-                                        attachmentUrls[input.id] = downloadURL;
-                                        console.log(`Uploaded ${input.id}: ${downloadURL}`);
-                                    });
-                                uploadPromises.push(uploadPromise);
-                            }
-                        }
+    try {
+        const docDateValue = document.getElementById('req-doc-date').value;
+        let docDateTimestamp = null;
+        if (docDateValue) {
+            // แปลงวันที่จาก "d/m/Y" เป็น object วันที่
+            const parts = docDateValue.split('/');
+            if (parts.length === 3) {
+                const day = parseInt(parts[0], 10);
+                const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+                const year = parseInt(parts[2], 10);
+                docDateTimestamp = window.Timestamp.fromDate(new Date(year, month, day));
+            } else {
+                console.warn("Invalid date format for docDate:", docDateValue);
+                // ถ้าวันที่ไม่ถูกต้อง อาจจะตั้งเป็น null หรือ Timestamp.now() แทน
+                docDateTimestamp = window.Timestamp.now();
+            }
+        }
 
-                        // รอให้ทุกไฟล์อัปโหลดเสร็จ
-                        await Promise.all(uploadPromises);
 
-                        // --- ขั้นตอนที่ 3: อัปเดตเอกสารใน Firestore ด้วย URL ของไฟล์แนบ ---
-                        if (Object.keys(attachmentUrls).length > 0) {
-                            await window.updateDoc(docRef, {
-                                attachments: attachmentUrls
-                            });
-                            console.log("Document updated with attachment URLs.");
-                        }
-                        
-                        showAlert('success', 'ยื่นเรื่องสำเร็จ!', `เลขที่เอกสารของคุณคือ ${requestId}`);
-                        requireForm.reset();
-                        initializeRequireForm(); // Reset form state
-                        
-                    } catch (error) {
-                        console.error("Error submitting request: ", error);
-                        showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถยื่นเรื่องได้ กรุณาลองใหม่อีกครั้ง');
-                        // หากเกิดข้อผิดพลาดระหว่างอัปโหลดไฟล์ ควรพิจารณาลบเอกสารที่สร้างไปแล้ว
-                        if (docRef) {
-                            await window.deleteDoc(docRef);
-                            console.log(`Rolled back: Deleted document ${docRef.id}`);
-                        }
-                    } finally {
-                         submitBtn.disabled = false;
-                         submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>ยื่นเรื่อง';
-                    }
-                });
-            };
+        const initialFormData = {
+            requesterId: window.currentUser.uid,
+            requesterName: window.currentUser.name || 'ไม่ระบุชื่อ', // เพิ่มค่า default กัน undefined
+            idCard: document.getElementById('req-id-card').value || '',
+            title: document.getElementById('req-title').value || '',
+            firstName: document.getElementById('req-fname').value || '',
+            lastName: document.getElementById('req-lname').value || '',
+            affiliation: document.getElementById('req-affiliation').value || '',
+            docNo: document.getElementById('req-doc-no').value || '',
+            docDate: docDateTimestamp, // ใช้ Timestamp ที่แปลงแล้ว
+            type: document.getElementById('req-type').value || 'in-mod',
+            status: 'รอพิจารณา',
+            createdAt: window.Timestamp.now(),
+            history: [{
+                status: 'รอพิจารณา',
+                date: window.Timestamp.now(),
+                actor: window.currentUser.email || 'system', // ใช้ email ผู้ใช้งาน
+                notes: 'ยื่นเรื่องเข้าระบบ'
+            }],
+            attachments: {}
+        };
+
+        // --- Debugging: ตรวจสอบข้อมูลก่อนส่ง ---
+        console.log("Data being sent to Firestore:", initialFormData);
+        // ตรวจสอบว่ามีฟิลด์ใดเป็น undefined หรือไม่
+        for (const key in initialFormData) {
+            if (initialFormData[key] === undefined) {
+                console.warn(`Field '${key}' is undefined. This might cause issues.`);
+            }
+        }
+        // --- End Debugging ---
+
+        docRef = await window.addDoc(window.collection(window.db, "requests"), initialFormData);
+        const requestId = docRef.id;
+
+        showAlert('success', 'ยื่นเรื่องสำเร็จ!', `เลขที่เอกสารของคุณคือ ${requestId}. กำลังอัปโหลดไฟล์...`);
+
+        // ส่วนอัปโหลดไฟล์ (จะพูดถึงในหัวข้อถัดไป)
+        const fileInputs = document.querySelectorAll('#attachment-section input[type="file"]');
+        const uploadPromises = [];
+        for (const input of fileInputs) {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                const storageRef = window.ref(window.storage, `requests/${requestId}/${input.id}-${file.name}`);
+                uploadPromises.push(
+                    window.uploadBytes(storageRef, file)
+                    .then(snapshot => window.getDownloadURL(snapshot.ref))
+                    .then(downloadURL => ({
+                        id: input.id,
+                        url: downloadURL
+                    }))
+                    .catch(fileError => {
+                        console.error(`Error uploading file ${input.id}:`, fileError);
+                        showAlert('warning', 'อัปโหลดไฟล์บางส่วนไม่สำเร็จ', `ไฟล์ ${input.id} ไม่สามารถอัปโหลดได้: ${fileError.message}`);
+                        return null; // ส่ง null กลับมาเพื่อไม่ให้ Promise.all หยุดทำงาน
+                    })
+                );
+            }
+        }
+
+        const uploadedFiles = await Promise.all(uploadPromises);
+        const attachmentUrls = uploadedFiles.filter(Boolean).reduce((acc, file) => { // กรองค่าที่เป็น null ออก
+            acc[file.id] = file.url;
+            return acc;
+        }, {});
+
+        if (Object.keys(attachmentUrls).length > 0) {
+            await window.updateDoc(docRef, {
+                attachments: attachmentUrls
+            });
+            showAlert('success', 'อัปโหลดไฟล์สำเร็จ!', 'เอกสารของคุณพร้อมใช้งานแล้ว');
+        } else {
+             showAlert('info', 'ไม่มีไฟล์ให้อัปโหลด', 'คำขอของคุณถูกบันทึกแล้ว แต่ไม่มีไฟล์แนบ');
+        }
+
+        requireForm.reset();
+        handleAttachmentVisibility();
+        switchView('status-view'); // พาผู้ใช้ไปยังหน้าติดตามสถานะหลังจากยื่นเรื่องสำเร็จ
+
+    } catch (error) {
+        console.error("Error submitting request: ", error);
+        // แสดงข้อความ error ที่เฉพาะเจาะจงมากขึ้น
+        let errorMessage = 'ไม่สามารถยื่นเรื่องได้ กรุณาลองใหม่อีกครั้ง';
+        if (error.code) {
+            errorMessage += ` (Code: ${error.code})`;
+        }
+        showAlert('error', 'เกิดข้อผิดพลาด', errorMessage);
+
+        // หากมีการสร้างเอกสารใน Firestore แล้ว แต่มีปัญหาในการอัปโหลดไฟล์
+        // พิจารณาว่าจะลบเอกสารออกหรือไม่ ขึ้นอยู่กับ business logic ของคุณ
+        // if (docRef && docRef.id) {
+        //     console.warn(`Deleting partially created document: ${docRef.id}`);
+        //     await window.deleteDoc(docRef);
+        // }
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>ยื่นเรื่อง';
+    }
+});
             
             // 3. โหลดข้อมูลตารางติดตามสถานะ
             const loadStatusData = async () => {
