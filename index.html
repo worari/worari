@@ -10,28 +10,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap 5.3 CSS -->
+    <!-- External Libraries CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-    <!-- Flatpickr (Date Picker) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
-    <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    
+    <!-- TailwindCSS for Print -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* ใช้ฟอนต์ Sarabun เป็นหลัก */
+        /* Base and Font Styles */
         body, h1, h2, h3, h4, h5, h6, .btn, .form-control, .form-select, .card-title, .nav-link, .breadcrumb-item, .dataTables_wrapper {
             font-family: 'Sarabun', sans-serif;
         }
 
-        /* --- Splash Screen Style --- */
+        /* Splash Screen */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -47,7 +42,7 @@
             transition: opacity 0.5s ease-out;
         }
 
-        /* --- Login Page Style --- */
+        /* Login Page */
         #login-container {
             min-height: 100vh;
             background: url('https://images.unsplash.com/photo-1576133978840-755f333b6a24?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
@@ -58,79 +53,49 @@
             backdrop-filter: blur(10px);
         }
 
-        /* --- Main App Layout --- */
-        #app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-        #sidebar {
-            width: 280px;
-            min-height: 100vh;
-            transition: margin-left 0.3s;
-        }
-        #main-wrapper {
-            flex-grow: 1;
-            transition: width 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-        #main-content {
-            flex-grow: 1;
-            overflow-y: auto;
-        }
+        /* Main Application Layout */
+        #app-container { display: flex; min-height: 100vh; }
+        #sidebar { width: 280px; min-height: 100vh; transition: margin-left 0.3s; }
+        #main-wrapper { flex-grow: 1; display: flex; flex-direction: column; }
+        #main-content { flex-grow: 1; overflow-y: auto; }
         
-        /* Responsive Sidebar */
+        /* Responsive Design */
         @media (max-width: 992px) {
-            #sidebar {
-                margin-left: -280px;
-                position: fixed;
-                z-index: 1030;
-                height: 100%;
-            }
-            #sidebar.active {
-                margin-left: 0;
-            }
+            #sidebar { margin-left: -280px; position: fixed; z-index: 1030; height: 100%; }
+            #sidebar.active { margin-left: 0; }
         }
 
-        /* Helper class to hide views */
-        .content-view {
-            display: none;
-        }
-        .content-view.active {
-            display: block;
-        }
+        /* View Management */
+        .content-view { display: none; }
+        .content-view.active { display: block; }
         
-        /* Custom styles for workflow status */
-        .status-badge {
-            font-size: 0.9em;
-            padding: 0.5em 0.8em;
-        }
-        .status-รอพิจารณา { background-color: #ffc107 !important; color: #000; }
-        .status-รับรองแล้ว { background-color: #198754 !important; color: #fff; }
-        .status-ส่งกลับแก้ไข { background-color: #dc3545 !important; color: #fff; }
+        /* Custom Component Styles */
+        .status-badge { font-size: 0.9em; padding: 0.5em 0.8em; color: #fff; }
+        .status-รอตรวจสอบ { background-color: #ffc107 !important; color: #000;}
+        .status-รอผู้บังคับบัญชาอนุมัติ { background-color: #0dcaf0 !important; color: #000;}
+        .status-รับรองแล้ว { background-color: #198754 !important; }
+        .status-ส่งกลับแก้ไข { background-color: #dc3545 !important; }
 
-        .signature-pad {
-            border: 1px dashed #ccc;
-            border-radius: .375rem;
-            cursor: pointer;
-        }
-        .signature-pad:hover {
-            background-color: #f8f9fa;
-        }
-        .signature-pad img {
-            max-width: 100%;
-            max-height: 150px;
-        }
-        .chart-container .spinner-border {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+        .signature-pad { border: 1px dashed #ccc; border-radius: .375rem; cursor: pointer; }
+        .signature-pad:hover { background-color: #f8f9fa; }
+        .signature-pad img { max-width: 100%; max-height: 150px; }
+        .chart-container .spinner-border { position: absolute; top: 50%; left: 50%; }
+        .attachment-in-mod, .attachment-out-mod { display: none; }
+
+        /* Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #print-section, #print-section * { visibility: visible; }
+            #print-section { position: absolute; left: 0; top: 0; width: 100%; }
+            .printable-table { @apply w-full text-sm text-left text-gray-500; }
+            .printable-table thead { @apply text-xs text-gray-700 uppercase bg-gray-50; }
+            .printable-table th, .printable-table td { @apply px-4 py-2 border border-gray-300; }
         }
     </style>
 </head>
 <body class="bg-light">
 
-    <!-- 1. Splash Screen -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <i class="fa-solid fa-shield-halved fa-4x text-success mb-3"></i>
         <h4 class="mb-2">ระบบการรับรองเวลาราชการตอนเป็นทหาร</h4>
@@ -140,7 +105,7 @@
         </div>
     </div>
 
-    <!-- 2. Login Page -->
+    <!-- Login Page -->
     <div id="login-container" class="d-flex justify-content-center align-items-center">
         <div class="card shadow-lg login-card" style="width: 25rem;">
             <div class="card-body p-5">
@@ -150,60 +115,39 @@
                 </div>
                 <form id="login-form" class="needs-validation" novalidate>
                     <div class="mb-3">
-                        <label for="login-email" class="form-label">ชื่อผู้ใช้งาน (อีเมล)</label>
+                        <label for="login-email" class="form-label">อีเมล</label>
                         <input type="email" class="form-control" id="login-email" required>
-                        <div class="invalid-feedback">กรุณากรอกอีเมลให้ถูกต้อง</div>
+                        <div class="invalid-feedback">กรุณากรอกอีเมล</div>
                     </div>
                     <div class="mb-3">
                         <label for="login-password" class="form-label">รหัสผ่าน</label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="login-password" required>
-                            <button class="btn btn-outline-secondary" type="button" id="toggle-password">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
+                            <button class="btn btn-outline-secondary" type="button" id="toggle-password"><i class="fa-solid fa-eye"></i></button>
                         </div>
                          <div class="invalid-feedback">กรุณากรอกรหัสผ่าน</div>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success">เข้าสู่ระบบ</button>
-                    </div>
+                    <div class="d-grid"><button type="submit" class="btn btn-success">เข้าสู่ระบบ</button></div>
                 </form>
                 <div class="text-center mt-3">
                     <a href="#" class="text-decoration-none" id="forgot-password-link">ลืมรหัสผ่าน?</a>
                     <hr>
-                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#register-modal">
-                        ลงทะเบียนขอเข้าใช้งานใหม่
-                    </button>
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#register-modal">ลงทะเบียน</button>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Registration Modal -->
-    <div class="modal fade" id="register-modal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal fade" id="register-modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="registerModalLabel">ลงทะเบียนผู้ใช้งานใหม่</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          <div class="modal-header"><h5 class="modal-title">ลงทะเบียนผู้ใช้งานใหม่</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
           <div class="modal-body">
             <form id="register-form" class="needs-validation" novalidate>
-              <div class="mb-3">
-                <label for="register-name" class="form-label">ชื่อ-นามสกุล</label>
-                <input type="text" class="form-control" id="register-name" required>
-                <div class="invalid-feedback">กรุณากรอกชื่อ-นามสกุล</div>
-              </div>
-              <div class="mb-3">
-                <label for="register-email" class="form-label">อีเมล</label>
-                <input type="email" class="form-control" id="register-email" required>
-                 <div class="invalid-feedback">กรุณากรอกอีเมลให้ถูกต้อง</div>
-              </div>
-              <div class="mb-3">
-                <label for="register-password" class="form-label">รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)</label>
-                <input type="password" class="form-control" id="register-password" required minlength="6">
-                 <div class="invalid-feedback">รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร</div>
-              </div>
+              <div class="mb-3"><label for="register-name" class="form-label">ชื่อ-นามสกุล</label><input type="text" class="form-control" id="register-name" required></div>
+              <div class="mb-3"><label for="register-email" class="form-label">อีเมล</label><input type="email" class="form-control" id="register-email" required></div>
+              <div class="mb-3"><label for="register-password" class="form-label">รหัสผ่าน (6+ ตัวอักษร)</label><input type="password" class="form-control" id="register-password" required minlength="6"></div>
               <button type="submit" class="btn btn-primary w-100">ลงทะเบียน</button>
             </form>
           </div>
@@ -211,63 +155,35 @@
       </div>
     </div>
 
-
-    <!-- 3. Main Application -->
+    <!-- Main Application -->
     <div id="app-container" class="d-none">
         <!-- Sidebar -->
         <aside id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
-            <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <i class="fa-solid fa-shield-halved fa-2x me-2"></i>
-                <span class="fs-5">ระบบรับรองเวลาฯ</span>
-            </a>
+            <a href="#" class="d-flex align-items-center mb-3 text-white text-decoration-none"><i class="fa-solid fa-shield-halved fa-2x me-2"></i><span class="fs-5">ระบบรับรองเวลาฯ</span></a>
             <hr>
             <div id="user-profile" class="text-center mb-3">
-                <img src="https://placehold.co/80x80/6c757d/fff?text=User" class="rounded-circle mb-2" alt="User" id="user-avatar">
-                <h6 id="user-name">ชื่อผู้ใช้งาน</h6>
+                <img src="https://placehold.co/80x80" class="rounded-circle mb-2" alt="User" id="user-avatar">
+                <h6 id="user-name">ชื่อผู้ใช้</h6>
                 <span class="badge bg-success" id="user-role">บทบาท</span>
             </div>
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-white active" data-view="dashboard-view">
-                        <i class="fa-solid fa-chart-pie me-2"></i> แดชบอร์ด
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link text-white" data-view="require-view">
-                        <i class="fa-solid fa-file-pen me-2"></i> ยื่นขอรับรอง
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link text-white" data-view="status-view">
-                        <i class="fa-solid fa-magnifying-glass-chart me-2"></i> ติดตามสถานะ
-                    </a>
-                </li>
-                <li class="nav-item-role" data-roles="แอดมิน,ผู้ตรวจสอบ,ผู้บังคับบัญชา">
-                    <a href="#" class="nav-link text-white" data-view="document-view">
-                        <i class="fa-solid fa-file-signature me-2"></i> รับรองเอกสาร
-                    </a>
-                </li>
-                <li class="nav-item-role" data-roles="แอดมิน">
-                    <a href="#" class="nav-link text-white" data-view="admin-view">
-                        <i class="fa-solid fa-users-gear me-2"></i> จัดการผู้ใช้งาน
-                    </a>
-                </li>
+                <li class="nav-item"><a href="#" class="nav-link text-white active" data-view="dashboard-view"><i class="fa-solid fa-chart-pie me-2"></i>แดชบอร์ด</a></li>
+                <li><a href="#" class="nav-link text-white" data-view="require-view"><i class="fa-solid fa-file-pen me-2"></i>ยื่นขอรับรอง</a></li>
+                <li><a href="#" class="nav-link text-white" data-view="status-view"><i class="fa-solid fa-magnifying-glass-chart me-2"></i>ติดตามสถานะ</a></li>
+                <li class="nav-item-role" data-roles="แอดมิน,ผู้ตรวจสอบ,ผู้บังคับบัญชา"><a href="#" class="nav-link text-white" data-view="document-view"><i class="fa-solid fa-file-signature me-2"></i>รับรองเอกสาร</a></li>
+                <li class="nav-item-role" data-roles="แอดมิน"><a href="#" class="nav-link text-white" data-view="admin-view"><i class="fa-solid fa-users-gear me-2"></i>จัดการผู้ใช้งาน</a></li>
             </ul>
             <hr>
-            <button class="btn btn-outline-danger" id="logout-button">
-                <i class="fa-solid fa-right-from-bracket me-2"></i> ออกจากระบบ
-            </button>
+            <button class="btn btn-outline-danger" id="logout-button"><i class="fa-solid fa-right-from-bracket me-2"></i>ออกจากระบบ</button>
         </aside>
 
-        <!-- Main Wrapper (Navbar + Content) -->
+        <!-- Main Wrapper -->
         <div id="main-wrapper">
             <!-- Top Navbar -->
             <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
                 <div class="container-fluid">
-                    <button class="btn btn-light d-lg-none" type="button" id="sidebar-toggle">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
+                    <button class="btn btn-light d-lg-none" type="button" id="sidebar-toggle"><i class="fa-solid fa-bars"></i></button>
                     <h5 class="mb-0" id="page-title">แดชบอร์ด</h5>
                 </div>
             </nav>
@@ -276,133 +192,57 @@
             <main id="main-content" class="p-4">
                 <!-- Dashboard View -->
                 <div id="dashboard-view" class="content-view active">
-                    <div class="row g-4">
-                        <!-- Summary Cards -->
+                     <div class="row mb-4">
+                        <div class="col-md-8"><h4 id="dashboard-title">สรุปภาพรวม</h4></div>
                         <div class="col-md-4">
-                            <div class="card text-white bg-primary">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title">เรื่องทั้งหมด</h5>
-                                        <p class="card-text fs-2" id="total-requests">0</p>
-                                    </div>
-                                    <i class="fa-solid fa-folder-open fa-3x"></i>
-                                </div>
-                            </div>
+                            <select class="form-select" id="dashboard-year-filter"></select>
                         </div>
-                         <div class="col-md-4">
-                            <div class="card text-white bg-warning">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title">รอพิจารณา</h5>
-                                        <p class="card-text fs-2" id="pending-requests">0</p>
-                                    </div>
-                                    <i class="fa-solid fa-hourglass-half fa-3x"></i>
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-4">
-                            <div class="card text-white bg-success">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title">รับรองแล้ว</h5>
-                                        <p class="card-text fs-2" id="approved-requests">0</p>
-                                    </div>
-                                    <i class="fa-solid fa-circle-check fa-3x"></i>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Charts -->
-                        <div class="col-md-6">
-                            <div class="card h-100">
-                                <div class="card-body chart-container position-relative">
-                                    <h5 class="card-title">ประเภทข้าราชการ</h5>
-                                    <canvas id="doughnut-chart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card h-100">
-                                <div class="card-body chart-container position-relative">
-                                    <h5 class="card-title">จำนวนเรื่องที่ยื่น (รายเดือน)</h5>
-                                    <canvas id="bar-chart-monthly"></canvas>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6"><div class="card text-white bg-primary h-100"><div class="card-body d-flex justify-content-between align-items-center"><div><h5 class="card-title">เรื่องทั้งหมด</h5><p class="card-text fs-2" id="total-requests">0</p></div><i class="fa-solid fa-folder-open fa-3x"></i></div></div></div>
+                        <div class="col-lg-3 col-md-6"><div class="card text-dark bg-warning h-100"><div class="card-body d-flex justify-content-between align-items-center"><div><h5 class="card-title">รอตรวจสอบ</h5><p class="card-text fs-2" id="pending-requests">0</p></div><i class="fa-solid fa-hourglass-half fa-3x"></i></div></div></div>
+                        <div class="col-lg-3 col-md-6"><div class="card text-dark bg-info h-100"><div class="card-body d-flex justify-content-between align-items-center"><div><h5 class="card-title">รออนุมัติ</h5><p class="card-text fs-2" id="commander-pending-requests">0</p></div><i class="fa-solid fa-user-shield fa-3x"></i></div></div></div>
+                        <div class="col-lg-3 col-md-6"><div class="card text-white bg-success h-100"><div class="card-body d-flex justify-content-between align-items-center"><div><h5 class="card-title">รับรองแล้ว</h5><p class="card-text fs-2" id="approved-requests">0</p></div><i class="fa-solid fa-circle-check fa-3x"></i></div></div></div>
+                        <div class="col-md-4"><div class="card h-100"><div class="card-body chart-container position-relative"><h5 class="card-title">ประเภทข้าราชการ</h5><canvas id="doughnut-chart"></canvas></div></div></div>
+                        <div class="col-md-8"><div class="card h-100"><div class="card-body chart-container position-relative"><h5 class="card-title">จำนวนเรื่อง (รายเดือน)</h5><canvas id="bar-chart-monthly"></canvas></div></div></div>
                     </div>
                 </div>
 
                 <!-- Require View -->
                 <div id="require-view" class="content-view">
                     <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">แบบฟอร์มยื่นคำขอรับรองเวลาราชการ</h5>
-                        </div>
+                        <div class="card-header"><h5 class="mb-0">แบบฟอร์มยื่นคำขอรับรองเวลาราชการ</h5></div>
                         <div class="card-body">
                             <form id="require-form" class="needs-validation" novalidate>
                                 <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="req-id-card" class="form-label">เลขบัตรประชาชน</label>
-                                        <input type="text" class="form-control" id="req-id-card" placeholder="xxxxxxxxxxxxx" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="req-title" class="form-label">คำนำหน้า</label>
-                                        <select id="req-title" class="form-select" required>
-                                            <option selected disabled value="">เลือก...</option>
-                                            <option>นาย</option>
-                                            <option>นาง</option>
-                                            <option>นางสาว</option>
-                                            <option>จ.ส.อ.</option>
-                                            <option>ร.อ.</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="req-fname" class="form-label">ชื่อ</label>
-                                        <input type="text" class="form-control" id="req-fname" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="req-lname" class="form-label">นามสกุล</label>
-                                        <input type="text" class="form-control" id="req-lname" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="req-affiliation" class="form-label">สังกัด</label>
-                                        <input type="text" class="form-control" id="req-affiliation" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="req-doc-no" class="form-label">เลขที่หนังสือ</label>
-                                        <input type="text" class="form-control" id="req-doc-no">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="req-doc-date" class="form-label">วันที่หนังสือ</label>
-                                        <input type="text" class="form-control" id="req-doc-date" placeholder="เลือกวันที่">
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label for="req-type" class="form-label">ประเภทข้าราชการ</label>
-                                        <select id="req-type" class="form-select" required>
-                                            <option value="in-mod">ข้าราชการในกระทรวงกลาโหม</option>
-                                            <option value="out-mod">ข้าราชการนอกกระทรวงกลาโหม</option>
-                                        </select>
-                                    </div>
+                                    <div class="col-md-4"><label for="req-id-card" class="form-label">เลขบัตรประชาชน</label><input type="text" class="form-control" id="req-id-card" required></div>
+                                    <div class="col-md-2"><label for="req-title" class="form-label">คำนำหน้า</label><select id="req-title" class="form-select" required><option selected disabled value="">เลือก...</option><option>นาย</option><option>นาง</option><option>นางสาว</option><option>ว่าที่ร้อยตรี</option><option>จ.ส.อ.</option><option>ร.อ.</option></select></div>
+                                    <div class="col-md-3"><label for="req-fname" class="form-label">ชื่อ</label><input type="text" class="form-control" id="req-fname" required></div>
+                                    <div class="col-md-3"><label for="req-lname" class="form-label">นามสกุล</label><input type="text" class="form-control" id="req-lname" required></div>
+                                    <div class="col-md-6"><label for="req-affiliation" class="form-label">สังกัด</label><input type="text" class="form-control" id="req-affiliation" required></div>
+                                    <div class="col-md-3"><label for="req-doc-no" class="form-label">เลขที่หนังสือ</label><input type="text" class="form-control" id="req-doc-no"></div>
+                                    <div class="col-md-3"><label for="req-doc-date" class="form-label">วันที่หนังสือ</label><input type="text" class="form-control" id="req-doc-date" placeholder="เลือกวันที่"></div>
+                                    <div class="col-md-12"><label for="req-type" class="form-label">ประเภทข้าราชการ</label><select id="req-type" class="form-select" required><option value="in-mod">ข้าราชการในกระทรวงกลาโหม</option><option value="out-mod">ข้าราชการนอกกระทรวงกลาโหม</option></select></div>
                                     <hr>
-                                    <h5>ไฟล์แนบ (จำเป็น, รองรับ .jpg, .png, .pdf)</h5>
-                                    
+                                    <h5>ไฟล์แนบ (รองรับ .jpg, .png, .pdf และกล้อง)</h5>
                                     <div class="row g-3" id="attachment-section">
-                                        <div class="col-md-6">
-                                            <label for="file-id-card" class="form-label">สำเนาบัตร ปชช.</label>
-                                            <input class="form-control" type="file" id="file-id-card" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="file-sd8" class="form-label">สด.8</label>
-                                            <input class="form-control" type="file" id="file-sd8" required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="file-other" class="form-label">เอกสารอื่นๆ (ถ้ามี)</label>
-                                            <input class="form-control" type="file" id="file-other" multiple>
-                                        </div>
+                                        <div class="col-md-6 attachment-in-mod attachment-out-mod"><label for="file-id-card" class="form-label">สำเนาบัตร ปชช.</label><input class="form-control" type="file" id="file-id-card" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod attachment-out-mod"><label for="file-gov-card" class="form-label">สำเนาบัตรข้าราชการ</label><input class="form-control" type="file" id="file-gov-card" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod attachment-out-mod"><label for="file-sd3" class="form-label">สด.3</label><input class="form-control" type="file" id="file-sd3" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod attachment-out-mod"><label for="file-sd8" class="form-label">สด.8</label><input class="form-control" type="file" id="file-sd8" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-order-student" class="form-label">คำสั่งบรรจุนักเรียน</label><input class="form-control" type="file" id="file-order-student" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-order-appoint" class="form-label">คำสั่งบรรจุรับราชการ</label><input class="form-control" type="file" id="file-order-appoint" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-order-discharge" class="form-label">คำสั่งให้ออก</label><input class="form-control" type="file" id="file-order-discharge" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-order-release" class="form-label">คำสั่งให้พ้น</label><input class="form-control" type="file" id="file-order-release" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-order-transfer" class="form-label">คำสั่งรับโอน</label><input class="form-control" type="file" id="file-order-transfer" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-order-move" class="form-label">คำสั่งปรับย้าย</label><input class="form-control" type="file" id="file-order-move" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod"><label for="file-history" class="form-label">ประวัติ (ทบ.100)</label><input class="form-control" type="file" id="file-history" accept="image/*,.pdf" capture="camera"></div>
+                                        <div class="col-md-6 attachment-in-mod attachment-out-mod"><label for="file-other" class="form-label">เอกสารอื่นๆ</label><input class="form-control" type="file" id="file-other" accept="image/*,.pdf" capture="camera" multiple></div>
                                     </div>
                                 </div>
                                 <hr>
                                 <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-secondary" id="print-request-btn"><i class="fa-solid fa-print me-2"></i>พิมพ์คำขอ</button>
                                     <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane me-2"></i>ยื่นเรื่อง</button>
                                 </div>
                             </form>
@@ -412,200 +252,41 @@
 
                 <!-- Status View -->
                 <div id="status-view" class="content-view">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">ติดตามสถานะคำขอ</h5>
-                        </div>
-                        <div class="card-body">
-                            <table id="status-table" class="table table-striped table-bordered" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>วันที่ยื่น</th>
-                                        <th>เลขที่อ้างอิง</th>
-                                        <th>เรื่อง</th>
-                                        <th>สถานะ</th>
-                                        <th>อัปเดตล่าสุด</th>
-                                        <th>จัดการ</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div class="card"><div class="card-header"><h5 class="mb-0">ติดตามสถานะคำขอ</h5></div><div class="card-body"><table id="status-table" class="table table-striped table-bordered" style="width:100%"><thead><tr><th>วันที่ยื่น</th><th>เลขที่อ้างอิง</th><th>สถานะ</th><th>อัปเดตล่าสุด</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
                 </div>
 
                 <!-- Document (Certification) View -->
                 <div id="document-view" class="content-view">
-                     <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">รับรองเอกสาร</h5>
-                        </div>
-                        <div class="card-body">
-                            <table id="document-table" class="table table-striped table-bordered" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>วันที่รับเรื่อง</th>
-                                        <th>ชื่อ-นามสกุล</th>
-                                        <th>ประเภท</th>
-                                        <th>สถานะ</th>
-                                        <th>ผู้ตรวจสอบ</th>
-                                        <th>จัดการ</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+                     <div class="card"><div class="card-header"><h5 class="mb-0">รับรองเอกสาร</h5></div><div class="card-body"><table id="document-table" class="table table-striped table-bordered" style="width:100%"><thead><tr><th>วันที่รับเรื่อง</th><th>ชื่อ-นามสกุล</th><th>ประเภท</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
                 </div>
 
                 <!-- Admin View -->
                 <div id="admin-view" class="content-view">
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">จัดการผู้ใช้งาน</h5>
-                        </div>
-                        <div class="card-body">
-                             <table id="admin-table" class="table table-striped table-bordered" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>อีเมล</th>
-                                        <th>ชื่อ</th>
-                                        <th>บทบาท</th>
-                                        <th>ลายเซ็น</th>
-                                        <th>จัดการ</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div class="card"><div class="card-header d-flex justify-content-between align-items-center"><h5 class="mb-0">จัดการผู้ใช้งาน</h5></div><div class="card-body"><table id="admin-table" class="table table-striped table-bordered" style="width:100%"><thead><tr><th>อีเมล</th><th>ชื่อ</th><th>บทบาท</th><th>จัดการ</th></tr></thead><tbody></tbody></table></div></div>
                 </div>
             </main>
         </div>
     </div>
     
     <!-- Modals -->
-    <!-- User Management Modal -->
-    <div class="modal fade" id="user-modal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="userModalLabel">แก้ไขผู้ใช้งาน</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="user-form">
-                <input type="hidden" id="user-id">
-                <div class="mb-3">
-                    <label for="user-email" class="form-label">อีเมล</label>
-                    <input type="email" class="form-control" id="user-email" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="user-fullname" class="form-label">ชื่อ-นามสกุล</label>
-                    <input type="text" class="form-control" id="user-fullname" required>
-                </div>
-                <div class="mb-3">
-                    <label for="user-role-select" class="form-label">บทบาท</label>
-                    <select id="user-role-select" class="form-select" required>
-                        <option value="ผู้ใช้งานทั่วไป">ผู้ใช้งานทั่วไป</option>
-                        <option value="ผู้ตรวจสอบ">ผู้ตรวจสอบ</option>
-                        <option value="ผู้บังคับบัญชา">ผู้บังคับบัญชา</option>
-                        <option value="แอดมิน">แอดมิน</option>
-                    </select>
-                </div>
-                <div class="mb-3" id="signature-upload-container" style="display:none;">
-                    <label class="form-label">ภาพลายเซ็นต์</label>
-                    <div class="signature-pad p-3 text-center" id="signature-pad">
-                        <img id="signature-img" src="https://placehold.co/200x80/f0f0f0/6c757d?text=คลิกเพื่ออัปโหลด" alt="Signature">
-                    </div>
-                    <input type="file" id="signature-file-input" class="d-none" accept="image/png">
-                    <div class="form-text">สำหรับ 'ผู้ตรวจสอบ' และ 'ผู้บังคับบัญชา'</div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">บันทึกข้อมูล</button>
-            </form>
-          </div>
-        </div>
-      </div>
+    <div class="modal fade" id="user-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="userModalLabel">แก้ไขผู้ใช้งาน</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="user-form"><input type="hidden" id="user-id"><div class="mb-3"><label for="user-email" class="form-label">อีเมล</label><input type="email" class="form-control" id="user-email" readonly></div><div class="mb-3"><label for="user-fullname" class="form-label">ชื่อ-นามสกุล</label><input type="text" class="form-control" id="user-fullname" required></div><div class="mb-3"><label for="user-role-select" class="form-label">บทบาท</label><select id="user-role-select" class="form-select" required><option value="ผู้ใช้งานทั่วไป">ผู้ใช้งานทั่วไป</option><option value="ผู้ตรวจสอบ">ผู้ตรวจสอบ</option><option value="ผู้บังคับบัญชา">ผู้บังคับบัญชา</option><option value="แอดมิน">แอดมิน</option></select></div><div class="mb-3" id="signature-upload-container" style="display:none;"><label class="form-label">ภาพลายเซ็นต์</label><div class="signature-pad p-3 text-center" id="signature-pad"><img id="signature-img" src="https://placehold.co/200x80/f0f0f0/6c757d?text=อัปโหลด" alt="Signature"></div><input type="file" id="signature-file-input" class="d-none" accept="image/png"><div class="form-text">สำหรับ 'ผู้ตรวจสอบ' และ 'ผู้บังคับบัญชา'</div></div><button type="submit" class="btn btn-primary w-100">บันทึก</button></form></div></div></div>
     </div>
     
-    <!-- Certification Action Modal -->
-    <div class="modal fade" id="certify-action-modal" tabindex="-1" aria-labelledby="certifyActionModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="certifyActionModalLabel">ดำเนินการรับรองเอกสาร</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="certify-action-form">
-                <input type="hidden" id="certify-request-id">
-                <p><strong>เลขที่อ้างอิง:</strong> <span id="certify-doc-id"></span></p>
-                <p><strong>ชื่อผู้ยื่น:</strong> <span id="certify-requester-name"></span></p>
-                <div class="mb-3">
-                    <label class="form-label">เอกสารแนบ</label>
-                    <div id="certify-attachment-list" class="list-group"></div>
-                </div>
-                 <div class="mb-3">
-                    <label for="certify-status" class="form-label">การดำเนินการ</label>
-                    <select id="certify-status" class="form-select" required>
-                        <option value="รับรองแล้ว">รับรองเอกสาร</option>
-                        <option value="ส่งกลับแก้ไข">ส่งกลับเพื่อแก้ไข</option>
-                    </select>
-                </div>
-                 <div class="mb-3">
-                    <label for="certify-notes" class="form-label">หมายเหตุ (ถึงผู้ยื่นเรื่อง)</label>
-                    <textarea class="form-control" id="certify-notes" rows="3" placeholder="เช่น 'กรุณาแนบเอกสาร สด.3 เพิ่มเติม'"></textarea>
-                </div>
-                <div class="mb-3" id="certify-signature-container">
-                    <label class="form-label">ลงนามโดย</label>
-                    <div id="certify-signature-display" class="border p-2 rounded bg-light">
-                         <img src="https://placehold.co/200x80/f0f0f0/6c757d?text=ไม่มีลายเซ็น" alt="Signature" style="max-height: 80px;">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success w-100">ยืนยันการดำเนินการ</button>
-            </form>
-          </div>
-        </div>
-      </div>
+    <div class="modal fade" id="certify-action-modal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="certifyActionModalLabel">ดำเนินการเอกสาร</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row"><div class="col-md-7"><div id="request-details-section"></div><hr><label class="form-label fw-bold">ไฟล์แนบ</label><div id="certify-attachment-list" class="list-group mb-3"></div></div><div class="col-md-5 border-start"><h5 class="mb-3">ประวัติการดำเนินการ</h5><div id="certify-history-list"></div><hr><form id="certify-action-form" class="mt-3"><input type="hidden" id="certify-request-id"><div class="mb-3" id="certify-action-controls"><label for="certify-status" class="form-label fw-bold">การดำเนินการ</label><select id="certify-status" class="form-select" required></select></div><div class="mb-3"><label for="certify-notes" class="form-label">หมายเหตุ</label><textarea class="form-control" id="certify-notes" rows="3"></textarea></div><div class="mb-3" id="certify-signature-container"><label class="form-label">ลงนามโดย</label><div id="certify-signature-display" class="border p-2 rounded bg-light text-center"><img src="https://placehold.co/200x80" alt="Signature" style="max-height: 80px;"></div></div><button type="submit" class="btn btn-success w-100">ยืนยัน</button></form></div></div></div></div></div>
     </div>
-
+    
+    <!-- Hidden Printable Div -->
+    <div id="print-section" class="d-none"></div>
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword,
-            sendPasswordResetEmail,
-            onAuthStateChanged, 
-            signOut
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { 
-            getFirestore,
-            doc,
-            setDoc,
-            getDoc,
-            collection,
-            addDoc,
-            getDocs,
-            updateDoc,
-            deleteDoc,
-            query,
-            where,
-            Timestamp,
-            onSnapshot,
-            orderBy
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { 
-            getStorage, 
-            ref, 
-            uploadBytesResumable, 
-            getDownloadURL 
-        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, addDoc, updateDoc, collection, query, where, onSnapshot, orderBy, Timestamp, writeBatch, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
           apiKey: "AIzaSyBwWlf9q-VqT6WzlBsSMJCHPEJjR0Pi0Ek",
           authDomain: "sittiapp-58246.firebaseapp.com",
@@ -615,48 +296,56 @@
           appId: "1:817148456795:web:2ef24e18ee7ed83cc1f47e"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase and make services globally available
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-        
-        // Make functions globally available for event handlers
         window.firebase = {
-            auth, db, storage,
-            signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut,
-            doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, query, where, Timestamp, onSnapshot, orderBy,
-            ref, uploadBytesResumable, getDownloadURL
+            auth: getAuth(app),
+            db: getFirestore(app),
+            storage: getStorage(app),
+            ...{ onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut },
+            ...{ doc, setDoc, getDoc, addDoc, updateDoc, collection, query, where, onSnapshot, orderBy, Timestamp, writeBatch, deleteDoc },
+            ...{ ref, uploadBytesResumable, getDownloadURL, deleteObject }
         };
 
-        // --- AUTH STATE OBSERVER ---
-        onAuthStateChanged(auth, async (user) => {
-            const splashScreen = document.getElementById('splash-screen');
+        // --- Auth State Observer & Auto Logout ---
+        let logoutTimer;
+        const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 10 minutes
+
+        function resetLogoutTimer() {
+            clearTimeout(logoutTimer);
+            logoutTimer = setTimeout(() => {
+                console.log("Auto logging out due to inactivity.");
+                window.firebase.signOut(window.firebase.auth);
+            }, AUTO_LOGOUT_TIME);
+        }
+
+        window.firebase.onAuthStateChanged(window.firebase.auth, async (user) => {
+            const splash = document.getElementById('splash-screen');
             const loginContainer = document.getElementById('login-container');
             const appContainer = document.getElementById('app-container');
 
-            if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+            clearTimeout(logoutTimer);
 
-                if (userDocSnap.exists()) {
-                    window.currentUser = { uid: user.uid, ...userDocSnap.data() };
-                    setupUIForUser(window.currentUser);
-                    
+            if (user) {
+                const userDoc = await window.firebase.getDoc(window.firebase.doc(window.firebase.db, "users", user.uid));
+                if (userDoc.exists()) {
+                    window.currentUser = { uid: user.uid, ...userDoc.data() };
+                    window.setupUIForUser(window.currentUser);
                     loginContainer.classList.add('d-none');
                     appContainer.classList.remove('d-none');
-                    switchView('dashboard-view');
+                    window.switchView('dashboard-view');
+                    resetLogoutTimer();
+                    ['click', 'keypress', 'scroll', 'mousemove'].forEach(event => document.addEventListener(event, resetLogoutTimer));
                 } else {
-                    console.error("User document not found in Firestore!");
-                    await signOut(auth);
+                    await window.firebase.signOut(window.firebase.auth);
                 }
             } else {
                 window.currentUser = null;
                 loginContainer.classList.remove('d-none');
                 appContainer.classList.add('d-none');
             }
-            splashScreen.style.opacity = '0';
-            setTimeout(() => splashScreen.classList.add('d-none'), 500);
+            splash.style.opacity = '0';
+            setTimeout(() => splash.classList.add('d-none'), 500);
         });
     </script>
     
@@ -672,509 +361,420 @@
 
     <!-- Custom App Logic -->
     <script type="module">
-        // This is a module script, it can import from the firebase setup script
-        document.addEventListener('DOMContentLoaded', () => {
+        const { auth, db, storage, ...fb } = window.firebase;
 
-            const {
-                auth, db, storage,
-                signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut,
-                doc, setDoc, getDoc, collection, addDoc, updateDoc, deleteDoc, query, where, Timestamp, onSnapshot, orderBy,
-                ref, uploadBytesResumable, getDownloadURL
-            } = window.firebase;
+        // --- GLOBAL STATE ---
+        let charts = {}, dataTables = {}, unsubscribeListeners = [];
 
-            // --- GLOBAL VARIABLES & DOM ELEMENTS ---
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const logoutButton = document.getElementById('logout-button');
-            const sidebar = document.getElementById('sidebar');
-            const pageTitle = document.getElementById('page-title');
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const allContentViews = document.querySelectorAll('.content-view');
-            const togglePassword = document.getElementById('toggle-password');
-            const forgotPasswordLink = document.getElementById('forgot-password-link');
-            
-            let charts = {};
-            let dataTables = {};
-            let unsubscribeListeners = []; // To store snapshot listeners
+        // --- UTILS ---
+        const showAlert = (icon, title, text = '') => Swal.fire({ icon, title, text, confirmButtonText: 'ตกลง' });
+        const showToast = (icon, title) => Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true }).fire({ icon, title });
+        const formatDate = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+        const formatDateShort = (timestamp) => timestamp ? new Date(timestamp.seconds * 1000).toLocaleDateString('th-TH') : '-';
 
-            // --- UTILITY FUNCTIONS ---
-            const showAlert = (icon, title, text = '') => Swal.fire({ icon, title, text });
-            const showToast = (icon, title) => Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-            }).fire({ icon, title });
+        // --- AUTH LOGIC ---
+        $('#login-form').on('submit', e => {
+            e.preventDefault();
+            const form = e.target;
+            if (!form.checkValidity()) { form.classList.add('was-validated'); return; }
+            fb.signInWithEmailAndPassword(auth, $('#login-email').val(), $('#login-password').val())
+              .catch(err => showAlert('error', 'เข้าสู่ระบบไม่สำเร็จ', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'));
+        });
 
-            // --- AUTHENTICATION LOGIC ---
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                if (!loginForm.checkValidity()) {
-                    e.stopPropagation();
-                    loginForm.classList.add('was-validated');
-                    return;
-                }
-                
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
+        $('#register-form').on('submit', async e => {
+            e.preventDefault();
+            const form = e.target;
+            if (!form.checkValidity()) { form.classList.add('was-validated'); return; }
 
-                signInWithEmailAndPassword(auth, email, password)
-                    .catch(error => {
-                        console.error("Login Error:", error);
-                        showAlert('error', 'เข้าสู่ระบบไม่สำเร็จ', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
-                    });
-            });
+            const email = $('#register-email').val();
+            const password = $('#register-password').val();
+            const name = $('#register-name').val();
 
-            registerForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                if (!registerForm.checkValidity()) {
-                    e.stopPropagation();
-                    registerForm.classList.add('was-validated');
-                    return;
-                }
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const name = document.getElementById('register-name').value;
-                
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then(userCredential => {
-                        const user = userCredential.user;
-                        const userDocRef = doc(db, "users", user.uid);
-                        return setDoc(userDocRef, {
-                            email: user.email,
-                            name: name,
-                            role: 'ผู้ใช้งานทั่วไป',
-                            createdAt: Timestamp.now()
-                        });
-                    })
-                    .then(() => {
-                        showAlert('success', 'ลงทะเบียนสำเร็จ!', 'คุณสามารถเข้าสู่ระบบได้แล้ว');
-                        bootstrap.Modal.getInstance(document.getElementById('register-modal')).hide();
-                        registerForm.reset();
-                        registerForm.classList.remove('was-validated');
-                    })
-                    .catch(error => {
-                        console.error("Registration Error:", error);
-                        showAlert('error', 'ลงทะเบียนไม่สำเร็จ', error.code === 'auth/email-already-in-use' ? 'อีเมลนี้ถูกใช้งานแล้ว' : error.message);
-                    });
-            });
-
-            logoutButton.addEventListener('click', () => {
-                // Unsubscribe from all listeners before signing out
-                unsubscribeListeners.forEach(unsub => unsub());
-                unsubscribeListeners = [];
-                signOut(auth).catch(error => console.error('Logout Error:', error));
-            });
-            
-            togglePassword.addEventListener('click', function () {
-                const passwordInput = document.getElementById('login-password');
-                const icon = this.querySelector('i');
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                icon.classList.toggle('fa-eye');
-                icon.classList.toggle('fa-eye-slash');
-            });
-
-            forgotPasswordLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'รีเซ็ตรหัสผ่าน',
-                    input: 'email',
-                    inputLabel: 'กรุณากรอกอีเมลของคุณ',
-                    inputPlaceholder: 'enter@example.com',
-                    showCancelButton: true,
-                    confirmButtonText: 'ส่งลิงก์',
-                    cancelButtonText: 'ยกเลิก'
-                }).then((result) => {
-                    if (result.isConfirmed && result.value) {
-                        sendPasswordResetEmail(auth, result.value)
-                            .then(() => showAlert('success', 'ส่งลิงก์สำเร็จ!', 'กรุณาตรวจสอบอีเมลของคุณ'))
-                            .catch((error) => showAlert('error', 'เกิดข้อผิดพลาด', error.message));
-                    }
+            try {
+                const userCredential = await fb.createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                await fb.setDoc(fb.doc(db, "users", user.uid), {
+                    email: user.email, name, role: 'ผู้ใช้งานทั่วไป', createdAt: fb.Timestamp.now()
                 });
+                showAlert('success', 'ลงทะเบียนสำเร็จ!', 'คุณสามารถเข้าสู่ระบบได้แล้ว');
+                bootstrap.Modal.getInstance($('#register-modal')).hide();
+                form.reset();
+            } catch (error) {
+                showAlert('error', 'ลงทะเบียนไม่สำเร็จ', error.code === 'auth/email-already-in-use' ? 'อีเมลนี้ถูกใช้งานแล้ว' : error.message);
+            }
+        });
+        
+        $('#logout-button').on('click', () => fb.signOut(auth));
+        $('#toggle-password').on('click', function() {
+            const input = $('#login-password');
+            const icon = $(this).find('i');
+            input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+            icon.toggleClass('fa-eye fa-eye-slash');
+        });
+        $('#forgot-password-link').on('click', e => {
+            e.preventDefault();
+            Swal.fire({ title: 'รีเซ็ตรหัสผ่าน', input: 'email', inputLabel: 'กรุณากรอกอีเมลของคุณ', showCancelButton: true, confirmButtonText: 'ส่งลิงก์', cancelButtonText: 'ยกเลิก' })
+               .then(result => {
+                   if (result.isConfirmed && result.value) {
+                       fb.sendPasswordResetEmail(auth, result.value)
+                         .then(() => showAlert('success', 'ส่งลิงก์สำเร็จ!', 'กรุณาตรวจสอบอีเมลของคุณ'))
+                         .catch(err => showAlert('error', 'เกิดข้อผิดพลาด', err.message));
+                   }
+               });
+        });
+
+        // --- UI & NAVIGATION ---
+        window.setupUIForUser = (user) => {
+            if (!user) return;
+            $('#user-name').text(user.name || user.email);
+            $('#user-role').text(user.role);
+            $('#user-avatar').attr('src', `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.email)}&background=0D8ABC&color=fff`);
+            $('.nav-item-role').each(function() {
+                $(this).toggle($(this).data('roles').split(',').includes(user.role));
             });
+        };
 
+        window.switchView = (viewId) => {
+            unsubscribeListeners.forEach(unsub => unsub());
+            unsubscribeListeners = [];
+            $('.content-view').removeClass('active');
+            $(`#${viewId}`).addClass('active');
+            const activeLink = $(`#sidebar .nav-link[data-view="${viewId}"]`);
+            $('#page-title').text(activeLink.text().trim());
+            $('#sidebar .nav-link').removeClass('active');
+            activeLink.addClass('active');
+            loadDataForView(viewId);
+        };
 
-            // --- UI & NAVIGATION LOGIC ---
-            window.setupUIForUser = (user) => {
-                if (!user) return;
-                document.getElementById('user-name').textContent = user.name || user.email;
-                document.getElementById('user-role').textContent = user.role;
-                document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${user.name || user.email}&background=0D8ABC&color=fff`;
-                
-                document.querySelectorAll('.nav-item-role').forEach(item => {
-                    const allowedRoles = item.dataset.roles.split(',');
-                    item.style.display = allowedRoles.includes(user.role) ? 'block' : 'none';
-                });
-            };
+        $('#sidebar').on('click', 'a.nav-link', function(e) {
+            e.preventDefault();
+            const viewId = $(this).data('view');
+            if (viewId) {
+                window.switchView(viewId);
+                if (window.innerWidth < 992) $('#sidebar').removeClass('active');
+            }
+        });
+        $('#sidebar-toggle').on('click', () => $('#sidebar').toggleClass('active'));
 
-            window.switchView = (viewId) => {
-                // Unsubscribe from previous listeners
-                unsubscribeListeners.forEach(unsub => unsub());
-                unsubscribeListeners = [];
+        // --- DATA LOADING ---
+        const loadDataForView = (viewId) => {
+            const role = window.currentUser.role;
+            switch(viewId) {
+                case 'dashboard-view': loadDashboardData(); break;
+                case 'require-view': initializeRequireForm(); break;
+                case 'status-view': loadStatusData(); break;
+                case 'document-view': if (['แอดมิน', 'ผู้ตรวจสอบ', 'ผู้บังคับบัญชา'].includes(role)) loadDocumentData(role); break;
+                case 'admin-view': if (role === 'แอดมิน') loadAdminData(); break;
+            }
+        };
 
-                allContentViews.forEach(view => view.classList.remove('active'));
-                const targetView = document.getElementById(viewId);
-                if (targetView) {
-                    targetView.classList.add('active');
-                    
-                    const activeLink = sidebar.querySelector(`[data-view="${viewId}"]`);
-                    if (activeLink) {
-                        pageTitle.textContent = activeLink.innerText.trim();
-                        document.querySelectorAll('#sidebar .nav-link').forEach(link => link.classList.remove('active'));
-                        activeLink.classList.add('active');
-                    }
-                    loadDataForView(viewId);
-                }
-            };
-
-            sidebar.addEventListener('click', (e) => {
-                const link = e.target.closest('a.nav-link');
-                if (link && link.dataset.view) {
-                    e.preventDefault();
-                    switchView(link.dataset.view);
-                    if (window.innerWidth < 992) {
-                        sidebar.classList.remove('active');
-                    }
-                }
-            });
+        // --- SPECIFIC VIEW LOADERS ---
+        const loadDashboardData = () => {
+            // Populate year filter
+            const yearFilter = $('#dashboard-year-filter').empty();
+            const currentYear = new Date().getFullYear() + 543;
+            yearFilter.append('<option value="">ทุกปี</option>');
+            for (let i = 0; i < 5; i++) {
+                yearFilter.append(`<option value="${currentYear - i}">${currentYear - i}</option>`);
+            }
             
-            sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+            const renderCharts = (docs) => {
+                Object.values(charts).forEach(c => c.destroy());
+                let stats = { total: 0, pending: 0, commander_pending: 0, approved: 0, types: {'in-mod': 0, 'out-mod': 0}, monthly: Array(12).fill(0) };
+                docs.forEach(doc => {
+                    const req = doc.data();
+                    stats.total++;
+                    if (req.status === 'รอตรวจสอบ') stats.pending++;
+                    else if (req.status === 'รอผู้บังคับบัญชาอนุมัติ') stats.commander_pending++;
+                    else if (req.status === 'รับรองแล้ว') stats.approved++;
+                    if (req.type) stats.types[req.type]++;
+                    stats.monthly[req.createdAt.toDate().getMonth()]++;
+                });
 
+                $('#total-requests').text(stats.total);
+                $('#pending-requests').text(stats.pending);
+                $('#commander-pending-requests').text(stats.commander_pending);
+                $('#approved-requests').text(stats.approved);
+                
+                charts.doughnut = new Chart($('#doughnut-chart'), { type: 'doughnut', data: { labels: ['ใน กห.', 'นอก กห.'], datasets: [{ data: [stats.types['in-mod'], stats.types['out-mod']], backgroundColor: ['#0d6efd', '#ffc107'] }] } });
+                charts.monthly = new Chart($('#bar-chart-monthly'), { type: 'bar', data: { labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'], datasets: [{ label: 'จำนวนเรื่อง', data: stats.monthly, backgroundColor: '#198754' }] }, options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+            };
 
-            // --- DATA LOADING LOGIC ---
-            const loadDataForView = (viewId) => {
-                switch(viewId) {
-                    case 'dashboard-view': loadDashboardData(); break;
-                    case 'require-view': initializeRequireForm(); break;
-                    case 'status-view': loadStatusData(); break;
-                    case 'document-view': loadDocumentData(); break;
-                    case 'admin-view': loadAdminData(); break;
+            const q = fb.query(fb.collection(db, "requests"));
+            const unsubscribe = fb.onSnapshot(q, (snapshot) => renderCharts(snapshot.docs));
+            unsubscribeListeners.push(unsubscribe);
+
+            yearFilter.on('change', function() {
+                const year = $(this).val();
+                $('#dashboard-title').text(year ? `สรุปภาพรวม ปี ${year}` : 'สรุปภาพรวมทั้งหมด');
+                unsubscribeListeners.forEach(u => u());
+                unsubscribeListeners = [];
+                let yearQuery = fb.query(fb.collection(db, "requests"));
+                if (year) {
+                    const start = new Date(year - 543, 0, 1);
+                    const end = new Date(year - 543, 11, 31, 23, 59, 59);
+                    yearQuery = fb.query(fb.collection(db, "requests"), fb.where("createdAt", ">=", start), fb.where("createdAt", "<=", end));
                 }
+                const unsub = fb.onSnapshot(yearQuery, (snapshot) => renderCharts(snapshot.docs));
+                unsubscribeListeners.push(unsub);
+            });
+        };
+
+        const initializeRequireForm = () => {
+            const form = $('#require-form');
+            form[0].reset();
+            form.removeClass('was-validated');
+            flatpickr("#req-doc-date", { locale: "th", dateFormat: "d/m/Y" });
+
+            const reqTypeSelect = $('#req-type');
+            const handleAttachmentVisibility = () => {
+                const type = reqTypeSelect.val();
+                $('.attachment-in-mod, .attachment-out-mod').hide().find('input').prop('required', false);
+                $(`.attachment-${type}`).show().find('input').prop('required', true);
+                // Make "other files" not required
+                $('#file-other').prop('required', false);
             };
+            reqTypeSelect.on('change', handleAttachmentVisibility).trigger('change');
 
-            const loadDashboardData = () => {
-                Object.values(charts).forEach(chart => chart.destroy());
-                document.querySelectorAll('.chart-container .spinner-border').forEach(s => s.remove());
-                document.querySelectorAll('.chart-container').forEach(c => c.insertAdjacentHTML('beforeend', '<div class="spinner-border text-primary" role="status"></div>'));
-
-                const q = query(collection(db, "requests"));
-                const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    let total = 0, pending = 0, approved = 0;
-                    let typeCounts = { 'in-mod': 0, 'out-mod': 0 };
-                    let monthlyCounts = Array(12).fill(0);
-
-                    querySnapshot.forEach((doc) => {
-                        const req = doc.data();
-                        total++;
-                        if (req.status === 'รอพิจารณา') pending++;
-                        else if (req.status === 'รับรองแล้ว') approved++;
-                        
-                        if (req.type) typeCounts[req.type]++;
-                        
-                        const month = req.createdAt.toDate().getMonth();
-                        monthlyCounts[month]++;
-                    });
-
-                    $('#total-requests').text(total);
-                    $('#pending-requests').text(pending);
-                    $('#approved-requests').text(approved);
-
-                    document.querySelectorAll('.chart-container .spinner-border').forEach(s => s.remove());
-
-                    charts.doughnut = new Chart($('#doughnut-chart'), {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['ใน กห.', 'นอก กห.'],
-                            datasets: [{ data: [typeCounts['in-mod'], typeCounts['out-mod']], backgroundColor: ['#0d6efd', '#ffc107'] }]
-                        }
-                    });
+            form.on('submit', async function(e) {
+                e.preventDefault();
+                if (!this.checkValidity()) { this.classList.add('was-validated'); return; }
+                
+                const submitBtn = $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...');
+                
+                try {
+                    const docDateValue = $('#req-doc-date').val();
+                    const formData = {
+                        requesterId: window.currentUser.uid, requesterName: window.currentUser.name,
+                        ...Object.fromEntries(new FormData(this)),
+                        docDate: docDateValue ? fb.Timestamp.fromDate(flatpickr.parseDate(docDateValue, "d/m/Y")) : null,
+                        status: 'รอตรวจสอบ', createdAt: fb.Timestamp.now(), updatedAt: fb.Timestamp.now(),
+                        history: [{ status: 'ยื่นเรื่อง', date: fb.Timestamp.now(), actor: window.currentUser.name, notes: 'ยื่นเรื่องเข้าระบบ' }],
+                        attachments: {}
+                    };
+                    const docRef = await fb.addDoc(fb.collection(db, "requests"), formData);
                     
-                    charts.monthly = new Chart($('#bar-chart-monthly'), {
-                        type: 'bar',
-                        data: {
-                            labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
-                            datasets: [{ label: 'จำนวนเรื่อง', data: monthlyCounts, backgroundColor: '#198754' }]
-                        },
-                        options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-                    });
-                }, (error) => console.error("Error loading dashboard:", error));
-                unsubscribeListeners.push(unsubscribe);
-            };
-
-            const initializeRequireForm = () => {
-                flatpickr("#req-doc-date", { locale: "th", dateFormat: "d/m/Y" });
-                const form = document.getElementById('require-form');
-                form.onsubmit = async (e) => {
-                    e.preventDefault();
-                    if (!form.checkValidity()) {
-                        e.stopPropagation();
-                        form.classList.add('was-validated');
-                        return;
-                    }
-                    
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> กำลังบันทึก...';
-                    
-                    try {
-                        const docDateValue = $('#req-doc-date').val();
-                        const formData = {
-                            requesterId: window.currentUser.uid,
-                            requesterName: window.currentUser.name,
-                            idCard: $('#req-id-card').val(),
-                            title: $('#req-title').val(),
-                            firstName: $('#req-fname').val(),
-                            lastName: $('#req-lname').val(),
-                            affiliation: $('#req-affiliation').val(),
-                            docNo: $('#req-doc-no').val(),
-                            docDate: docDateValue ? Timestamp.fromDate(flatpickr.parseDate(docDateValue, "d/m/Y")) : null,
-                            type: $('#req-type').val(),
-                            status: 'รอพิจารณา',
-                            createdAt: Timestamp.now(),
-                            updatedAt: Timestamp.now(),
-                            history: [{
-                                status: 'รอพิจารณา',
-                                date: Timestamp.now(),
-                                actor: window.currentUser.name,
-                                notes: 'ยื่นเรื่องเข้าระบบ'
-                            }],
-                            attachments: {}
-                        };
-
-                        const docRef = await addDoc(collection(db, "requests"), formData);
-                        
-                        // File Uploads
-                        const fileInputs = document.querySelectorAll('#attachment-section input[type="file"]');
-                        const uploadPromises = [];
-                        for (const input of fileInputs) {
-                            if (input.files.length > 0) {
-                                for(const file of input.files) {
-                                    const filePath = `requests/${docRef.id}/${file.name}`;
-                                    const storageRef = ref(storage, filePath);
-                                    const uploadTask = uploadBytesResumable(storageRef, file);
-                                    uploadPromises.push(new Promise((resolve, reject) => {
-                                        uploadTask.on('state_changed', null, 
-                                            (error) => reject(error),
-                                            async () => {
-                                                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                                                resolve({ id: input.id, name: file.name, url: downloadURL });
-                                            }
-                                        );
-                                    }));
-                                }
+                    const uploadPromises = [];
+                    $('#attachment-section input[type="file"]').each(function() {
+                        if (this.files.length > 0) {
+                            for(const file of this.files) {
+                                const filePath = `requests/${docRef.id}/${file.name}`;
+                                const storageRef = fb.ref(storage, filePath);
+                                const uploadTask = fb.uploadBytesResumable(storageRef, file);
+                                uploadPromises.push(new Promise((resolve, reject) => {
+                                    uploadTask.on('state_changed', null, (err) => reject(err), 
+                                        async () => resolve({ id: this.id, name: file.name, url: await fb.getDownloadURL(uploadTask.snapshot.ref) })
+                                    );
+                                }));
                             }
                         }
-                        
-                        const uploadedFiles = await Promise.all(uploadPromises);
-                        const attachments = uploadedFiles.reduce((acc, file) => {
-                            if (!acc[file.id]) acc[file.id] = [];
-                            acc[file.id].push({ name: file.name, url: file.url });
-                            return acc;
-                        }, {});
-
-                        await updateDoc(docRef, { attachments });
-
-                        showAlert('success', 'ยื่นเรื่องสำเร็จ!', 'ระบบได้บันทึกคำขอของคุณแล้ว');
-                        form.reset();
-                        form.classList.remove('was-validated');
-                        switchView('status-view');
-
-                    } catch (error) {
-                        console.error("Error submitting request: ", error);
-                        showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถยื่นเรื่องได้');
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>ยื่นเรื่อง';
-                    }
-                };
-            };
-
-            const loadStatusData = () => {
-                const tableId = '#status-table';
-                if (dataTables[tableId]) dataTables[tableId].destroy();
-                
-                const q = query(collection(db, "requests"), where("requesterId", "==", window.currentUser.uid), orderBy("createdAt", "desc"));
-                const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const tableData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                    dataTables[tableId] = $(tableId).DataTable({
-                        destroy: true,
-                        data: tableData,
-                        columns: [
-                            { data: 'createdAt', render: data => data ? new Date(data.seconds * 1000).toLocaleDateString('th-TH') : '' },
-                            { data: 'id' },
-                            { data: null, render: data => `${data.title} ${data.firstName} ${data.lastName}`},
-                            { data: 'status', render: data => `<span class="badge rounded-pill status-${data.replace(/\s+/g, '-')}">${data}</span>` },
-                            { data: 'updatedAt', render: data => data ? new Date(data.seconds * 1000).toLocaleString('th-TH') : '' },
-                            { data: 'id', render: id => `<button class="btn btn-sm btn-info btn-view-details" data-id="${id}"><i class="fa-solid fa-eye"></i></button>` }
-                        ],
-                        language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json' }
                     });
-                });
-                unsubscribeListeners.push(unsubscribe);
-            };
+                    
+                    const uploadedFiles = await Promise.all(uploadPromises);
+                    const attachments = uploadedFiles.reduce((acc, file) => {
+                        if (!acc[file.id]) acc[file.id] = [];
+                        acc[file.id].push({ name: file.name, url: file.url });
+                        return acc;
+                    }, {});
 
-            const loadDocumentData = () => {
-                const tableId = '#document-table';
-                if (dataTables[tableId]) dataTables[tableId].destroy();
-                
-                const q = query(collection(db, "requests"), where("status", "==", "รอพิจารณา"), orderBy("createdAt", "asc"));
-                const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const tableData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                     dataTables[tableId] = $(tableId).DataTable({
-                        destroy: true,
-                        data: tableData,
-                        columns: [
-                            { data: 'createdAt', render: data => data ? new Date(data.seconds * 1000).toLocaleDateString('th-TH') : '' },
-                            { data: null, render: data => `${data.title} ${data.firstName} ${data.lastName}`},
-                            { data: 'type', render: data => data === 'in-mod' ? 'ใน กห.' : 'นอก กห.' },
-                            { data: 'status', render: data => `<span class="badge rounded-pill status-${data.replace(/\s+/g, '-')}">${data}</span>` },
-                            { data: 'history', render: data => data.find(h => h.status === 'รับรองแล้ว')?.actor || '-' },
-                            { data: 'id', render: id => `<button class="btn btn-sm btn-primary btn-certify-action" data-id="${id}"><i class="fa-solid fa-file-signature"></i></button>` }
-                        ],
-                        language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json' }
-                    });
-                });
-                unsubscribeListeners.push(unsubscribe);
-            };
+                    await fb.updateDoc(docRef, { attachments });
+                    showAlert('success', 'ยื่นเรื่องสำเร็จ!');
+                    this.reset();
+                    reqTypeSelect.trigger('change');
+                    window.switchView('status-view');
+                } catch (error) {
+                    console.error("Error submitting request: ", error);
+                    showAlert('error', 'เกิดข้อผิดพลาด', 'ไม่สามารถยื่นเรื่องได้');
+                } finally {
+                    submitBtn.prop('disabled', false).html('<i class="fa-solid fa-paper-plane me-2"></i>ยื่นเรื่อง');
+                }
+            });
 
-            const loadAdminData = () => {
-                const tableId = '#admin-table';
-                if (dataTables[tableId]) dataTables[tableId].destroy();
+            $('#print-request-btn').on('click', function() {
+                const data = Object.fromEntries(new FormData(form[0]));
+                const printContent = `
+                    <div class="p-8">
+                        <h3 class="text-center font-bold text-xl mb-6">แบบฟอร์มคำขอรับรองเวลาราชการ</h3>
+                        <table class="printable-table">
+                            <tbody>
+                                <tr><td class="font-bold">ชื่อ-สกุล</td><td>${data['req-title'] || ''} ${data['req-fname'] || ''} ${data['req-lname'] || ''}</td></tr>
+                                <tr><td class="font-bold">เลขบัตรประชาชน</td><td>${data['req-id-card'] || ''}</td></tr>
+                                <tr><td class="font-bold">สังกัด</td><td>${data['req-affiliation'] || ''}</td></tr>
+                                <tr><td class="font-bold">ประเภท</td><td>${$('#req-type option:selected').text()}</td></tr>
+                                <tr><td class="font-bold">เลขที่หนังสือ</td><td>${data['req-doc-no'] || '-'}</td></tr>
+                                <tr><td class="font-bold">วันที่หนังสือ</td><td>${data['req-doc-date'] || '-'}</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="mt-8">ลงชื่อ ..................................................... ผู้ยื่นคำขอ</p>
+                        <p class="ml-12">(&nbsp;&nbsp;&nbsp;${data['req-fname'] || ''} ${data['req-lname'] || ''}&nbsp;&nbsp;&nbsp;)</p>
+                    </div>
+                `;
+                $('#print-section').html(printContent);
+                window.print();
+            });
+        };
 
-                const q = query(collection(db, "users"), orderBy("email"));
-                const unsubscribe = onSnapshot(q, (snapshot) => {
-                    const tableData = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-                    dataTables[tableId] = $(tableId).DataTable({
-                        destroy: true,
-                        data: tableData,
-                        columns: [
-                            { data: 'email' },
-                            { data: 'name' },
-                            { data: 'role' },
-                            { data: 'signatureUrl', render: url => url ? `<img src="${url}" style="max-height:40px;">` : 'ไม่มี' },
-                            { data: 'id', render: id => `<button class="btn btn-sm btn-warning btn-edit-user" data-id="${id}"><i class="fa-solid fa-user-pen"></i></button>` }
-                        ],
-                        language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json' }
-                    });
+        const loadStatusData = () => {
+            const tableId = '#status-table';
+            if ($.fn.DataTable.isDataTable(tableId)) $(tableId).DataTable().destroy();
+            const q = fb.query(fb.collection(db, "requests"), fb.where("requesterId", "==", window.currentUser.uid), fb.orderBy("createdAt", "desc"));
+            const unsub = fb.onSnapshot(q, (snap) => {
+                const data = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+                $(tableId).DataTable({
+                    destroy: true, data, language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json' },
+                    columns: [
+                        { data: 'createdAt', render: formatDateShort },
+                        { data: 'id' },
+                        { data: 'status', render: d => `<span class="badge rounded-pill status-${d.replace(/\s+/g, '-')}">${d}</span>` },
+                        { data: 'updatedAt', render: formatDate },
+                        { data: 'id', render: id => `<button class="btn btn-sm btn-info btn-view-details" data-id="${id}"><i class="fa-solid fa-eye"></i></button>` }
+                    ]
                 });
-                unsubscribeListeners.push(unsubscribe);
-            };
+            });
+            unsubscribeListeners.push(unsub);
+        };
+
+        const loadDocumentData = (role) => {
+            const tableId = '#document-table';
+            if ($.fn.DataTable.isDataTable(tableId)) $(tableId).DataTable().destroy();
+
+            let statusFilter = role === 'ผู้ตรวจสอบ' ? 'รอตรวจสอบ' : 'รอผู้บังคับบัญชาอนุมัติ';
+            let q = fb.query(fb.collection(db, "requests"), fb.where("status", "==", statusFilter), fb.orderBy("createdAt", "asc"));
+            if (role === 'แอดมิน') {
+                 q = fb.query(fb.collection(db, "requests"), fb.orderBy("createdAt", "desc"));
+            }
+
+            const unsub = fb.onSnapshot(q, (snap) => {
+                const data = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+                $(tableId).DataTable({
+                    destroy: true, data, language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json' },
+                    columns: [
+                        { data: 'createdAt', render: formatDateShort },
+                        { data: null, render: d => `${d.requesterName}` },
+                        { data: 'type', render: d => d === 'in-mod' ? 'ใน กห.' : 'นอก กห.' },
+                        { data: 'status', render: d => `<span class="badge rounded-pill status-${d.replace(/\s+/g, '-')}">${d}</span>` },
+                        { data: 'id', render: id => `<button class="btn btn-sm btn-primary btn-certify-action" data-id="${id}"><i class="fa-solid fa-file-signature"></i></button>` }
+                    ]
+                });
+            });
+            unsubscribeListeners.push(unsub);
+        };
+        
+        const loadAdminData = () => {
+            const tableId = '#admin-table';
+            if ($.fn.DataTable.isDataTable(tableId)) $(tableId).DataTable().destroy();
+            const q = fb.query(fb.collection(db, "users"), fb.orderBy("email"));
+            const unsub = fb.onSnapshot(q, (snap) => {
+                const data = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+                $(tableId).DataTable({
+                    destroy: true, data, language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json' },
+                    columns: [
+                        { data: 'email' }, { data: 'name' }, { data: 'role' },
+                        { data: 'id', render: id => `<button class="btn btn-sm btn-warning btn-edit-user" data-id="${id}"><i class="fa-solid fa-user-pen"></i></button>` }
+                    ]
+                });
+            });
+            unsubscribeListeners.push(unsub);
+        };
+
+        // --- ACTION HANDLERS ---
+        $('#admin-table').on('click', '.btn-edit-user', async function() {
+            const userDoc = await fb.getDoc(fb.doc(db, 'users', $(this).data('id')));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                $('#user-id').val(userDoc.id);
+                $('#user-email').val(data.email);
+                $('#user-fullname').val(data.name);
+                $('#user-role-select').val(data.role).trigger('change');
+                $('#signature-img').attr('src', data.signatureUrl || 'https://placehold.co/200x80/f0f0f0/6c757d?text=อัปโหลด');
+                new bootstrap.Modal('#user-modal').show();
+            }
+        });
+
+        $('#user-role-select').on('change', function() {
+            $('#signature-upload-container').toggle(['ผู้ตรวจสอบ', 'ผู้บังคับบัญชา'].includes($(this).val()));
+        });
+        $('#signature-pad').on('click', () => $('#signature-file-input').click());
+        $('#signature-file-input').on('change', function(e) { if (e.target.files[0]) $('#signature-img').attr('src', URL.createObjectURL(e.target.files[0])); });
+
+        $('#user-form').on('submit', async function(e) {
+            e.preventDefault();
+            const userId = $('#user-id').val();
+            const userData = { name: $('#user-fullname').val(), role: $('#user-role-select').val() };
+            try {
+                const signatureFile = $('#signature-file-input')[0].files[0];
+                if (signatureFile) {
+                    const storageRef = fb.ref(storage, `signatures/${userId}.png`);
+                    await fb.uploadBytesResumable(storageRef, signatureFile);
+                    userData.signatureUrl = await fb.getDownloadURL(storageRef);
+                }
+                await fb.updateDoc(fb.doc(db, 'users', userId), userData);
+                showToast('success', 'อัปเดตข้อมูลสำเร็จ');
+                bootstrap.Modal.getInstance(this.closest('.modal')).hide();
+            } catch (error) { showAlert('error', 'บันทึกไม่สำเร็จ', error.message); }
+        });
+
+        $('#status-table, #document-table').on('click', '.btn-view-details, .btn-certify-action', async function() {
+            const requestId = $(this).data('id');
+            const requestDoc = await fb.getDoc(fb.doc(db, 'requests', requestId));
+            if (!requestDoc.exists()) return;
             
-            // --- ACTION HANDLERS ---
-            $('#admin-table').on('click', '.btn-edit-user', async function() {
-                const userId = $(this).data('id');
-                const userDoc = await getDoc(doc(db, 'users', userId));
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    $('#user-id').val(userId);
-                    $('#user-email').val(data.email);
-                    $('#user-fullname').val(data.name);
-                    $('#user-role-select').val(data.role).trigger('change');
-                    $('#signature-img').attr('src', data.signatureUrl || 'https://placehold.co/200x80/f0f0f0/6c757d?text=คลิกเพื่ออัปโหลด');
-                    new bootstrap.Modal(document.getElementById('user-modal')).show();
-                }
-            });
+            const data = requestDoc.data();
+            const { role } = window.currentUser;
+            const isActionable = (role === 'ผู้ตรวจสอบ' && data.status === 'รอตรวจสอบ') || (role === 'ผู้บังคับบัญชา' && data.status === 'รอผู้บังคับบัญชาอนุมัติ');
 
-            $('#user-role-select').on('change', function() {
-                const show = ['ผู้ตรวจสอบ', 'ผู้บังคับบัญชา'].includes($(this).val());
-                $('#signature-upload-container').toggle(show);
-            });
+            $('#certify-request-id').val(requestId);
+            $('#request-details-section').html(`
+                <p><strong>ผู้ยื่น:</strong> ${data.requesterName}</p>
+                <p><strong>สังกัด:</strong> ${data.affiliation}</p>
+                <p><strong>สถานะปัจจุบัน:</strong> ${data.status}</p>
+            `);
+            $('#certify-attachment-list').html(Object.values(data.attachments).flat().map(f => `<a href="${f.url}" target="_blank" class="list-group-item list-group-item-action">${f.name}</a>`).join('') || '<p class="text-muted">ไม่มีไฟล์แนบ</p>');
+            
+            $('#certify-history-list').html(data.history.slice().reverse().map(h => `
+                <div class="p-2 border-bottom">
+                    <p class="mb-0"><strong>${h.status}</strong> โดย ${h.actor}</p>
+                    <small class="text-muted">${formatDate(h.date)}</small>
+                    ${h.notes ? `<p class="mb-0 fst-italic">"${h.notes}"</p>` : ''}
+                </div>
+            `).join(''));
 
-            $('#signature-pad').on('click', () => $('#signature-file-input').click());
-            $('#signature-file-input').on('change', function(e) {
-                if (e.target.files && e.target.files[0]) {
-                    $('#signature-img').attr('src', URL.createObjectURL(e.target.files[0]));
-                }
-            });
+            $('#certify-action-controls, #certify-action-form button').toggle(isActionable);
+            $('#certify-signature-display img').attr('src', window.currentUser.signatureUrl || 'https://placehold.co/200x80/f0f0f0/6c757d?text=ไม่มีลายเซ็น');
 
-            $('#user-form').on('submit', async function(e) {
-                e.preventDefault();
-                const userId = $('#user-id').val();
-                const userData = {
-                    name: $('#user-fullname').val(),
-                    role: $('#user-role-select').val(),
-                };
+            const statusSelect = $('#certify-status').empty();
+            if (role === 'ผู้ตรวจสอบ') {
+                statusSelect.append('<option value="รอผู้บังคับบัญชาอนุมัติ">ส่งต่อให้ผู้บังคับบัญชา</option>');
+                statusSelect.append('<option value="ส่งกลับแก้ไข">ส่งกลับแก้ไข</option>');
+            } else if (role === 'ผู้บังคับบัญชา') {
+                statusSelect.append('<option value="รับรองแล้ว">รับรองเอกสาร</option>');
+                statusSelect.append('<option value="ส่งกลับแก้ไข">ส่งกลับแก้ไข</option>');
+            }
+
+            new bootstrap.Modal('#certify-action-modal').show();
+        });
+
+         $('#certify-action-form').on('submit', async function(e) {
+            e.preventDefault();
+            const requestId = $('#certify-request-id').val();
+            const newStatus = $('#certify-status').val();
+            const notes = $('#certify-notes').val();
+            const requestRef = fb.doc(db, 'requests', requestId);
+            
+            try {
+                const requestDoc = await fb.getDoc(requestRef);
+                const currentHistory = requestDoc.data().history || [];
+                const newHistoryEntry = { status: newStatus, notes, date: fb.Timestamp.now(), actor: window.currentUser.name };
+
+                await fb.updateDoc(requestRef, {
+                    status: newStatus, updatedAt: fb.Timestamp.now(), history: [...currentHistory, newHistoryEntry]
+                });
                 
-                try {
-                    const signatureFile = $('#signature-file-input')[0].files[0];
-                    if (signatureFile) {
-                        const storageRef = ref(storage, `signatures/${userId}.png`);
-                        await uploadBytesResumable(storageRef, signatureFile);
-                        userData.signatureUrl = await getDownloadURL(storageRef);
-                    }
-                    await updateDoc(doc(db, 'users', userId), userData);
-                    showToast('success', 'อัปเดตข้อมูลสำเร็จ');
-                    bootstrap.Modal.getInstance($('#user-modal')).hide();
-                } catch (error) {
-                    console.error("Error saving user:", error);
-                    showAlert('error', 'บันทึกไม่สำเร็จ', error.message);
-                }
-            });
-
-            $('#document-table, #status-table').on('click', '.btn-certify-action, .btn-view-details', async function() {
-                const requestId = $(this).data('id');
-                const requestDoc = await getDoc(doc(db, 'requests', requestId));
-                if (requestDoc.exists()) {
-                    const data = requestDoc.data();
-                    $('#certify-request-id').val(requestId);
-                    $('#certify-doc-id').text(requestId);
-                    $('#certify-requester-name').text(data.requesterName);
-                    $('#certify-status').val(data.status);
-                    
-                    const attachmentList = $('#certify-attachment-list').empty();
-                    if(data.attachments && Object.keys(data.attachments).length > 0) {
-                        for (const [key, files] of Object.entries(data.attachments)) {
-                           files.forEach(file => {
-                                attachmentList.append(`<a href="${file.url}" target="_blank" class="list-group-item list-group-item-action">${file.name}</a>`);
-                           });
-                        }
-                    } else {
-                        attachmentList.append('<p class="text-muted">ไม่พบไฟล์แนบ</p>');
-                    }
-                    
-                    $('#certify-signature-display img').attr('src', window.currentUser.signatureUrl || 'https://placehold.co/200x80/f0f0f0/6c757d?text=ไม่มีลายเซ็น');
-                    new bootstrap.Modal(document.getElementById('certify-action-modal')).show();
-                }
-            });
-
-             $('#certify-action-form').on('submit', async function(e) {
-                e.preventDefault();
-                const requestId = $('#certify-request-id').val();
-                const newStatus = $('#certify-status').val();
-                const notes = $('#certify-notes').val();
-                const requestRef = doc(db, 'requests', requestId);
-                
-                try {
-                    const requestDoc = await getDoc(requestRef);
-                    const currentHistory = requestDoc.data().history || [];
-                    
-                    const newHistoryEntry = {
-                        status: newStatus,
-                        notes: notes,
-                        date: Timestamp.now(),
-                        actor: window.currentUser.name,
-                        signatureUrl: window.currentUser.signatureUrl || null
-                    };
-
-                    await updateDoc(requestRef, {
-                        status: newStatus,
-                        updatedAt: Timestamp.now(),
-                        history: [...currentHistory, newHistoryEntry]
-                    });
-                    
-                    showToast('success', 'ดำเนินการสำเร็จ');
-                    bootstrap.Modal.getInstance($('#certify-action-modal')).hide();
-                    $(this)[0].reset();
-                } catch (error) {
-                    console.error("Error updating status: ", error);
-                    showAlert('error', 'เกิดข้อผิดพลาด', error.message);
-                }
-            });
-
+                showToast('success', 'ดำเนินการสำเร็จ');
+                bootstrap.Modal.getInstance(this.closest('.modal')).hide();
+                this.reset();
+            } catch (error) { showAlert('error', 'เกิดข้อผิดพลาด', error.message); }
         });
     </script>
-
 </body>
 </html>
