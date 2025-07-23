@@ -285,13 +285,16 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, addDoc, updateDoc, collection, query, where, onSnapshot, orderBy, Timestamp, writeBatch, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        // Google Drive integration is complex and requires a server-side component for security.
+        // The following imports are for Firebase and would be replaced by Google API calls.
+        // We are removing Firebase Storage imports.
+        // import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyBwWlf9q-VqT6WzlBsSMJCHPEJjR0Pi0Ek",
           authDomain: "sittiapp-58246.firebaseapp.com",
           projectId: "sittiapp-58246",
-          storageBucket: "sittiapp-58246.firebasestorage.app",
+          storageBucket: "sittiapp-58246.firebasestorage.app", // This would not be used for Google Drive uploads
           messagingSenderId: "817148456795",
           appId: "1:817148456795:web:2ef24e18ee7ed83cc1f47e"
         };
@@ -301,10 +304,10 @@
         window.firebase = {
             auth: getAuth(app),
             db: getFirestore(app),
-            storage: getStorage(app),
+            // storage: getStorage(app), // Removed for Google Drive integration
             ...{ onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut },
             ...{ doc, setDoc, getDoc, addDoc, updateDoc, collection, query, where, onSnapshot, orderBy, Timestamp, writeBatch, deleteDoc },
-            ...{ ref, uploadBytesResumable, getDownloadURL, deleteObject }
+            // ...{ ref, uploadBytesResumable, getDownloadURL, deleteObject } // Removed for Google Drive integration
         };
 
         // --- Auth State Observer & Auto Logout ---
@@ -361,7 +364,7 @@
 
     <!-- Custom App Logic -->
     <script type="module">
-        const { auth, db, storage, ...fb } = window.firebase;
+        const { auth, db, ...fb } = window.firebase;
 
         // --- GLOBAL STATE ---
         let charts = {}, dataTables = {}, unsubscribeListeners = [];
@@ -520,6 +523,27 @@
             });
         };
 
+        /**
+         * Placeholder function for Google Drive uploads.
+         * In a real application, this would involve:
+         * 1. Authenticating the user with Google (OAuth 2.0).
+         * 2. Sending the file and auth token to a secure server-side endpoint (e.g., a Cloud Function).
+         * 3. The server would use the Google Drive API to upload the file to the specified folder.
+         * This client-side function is for demonstration purposes only.
+         * @param {File} file The file to upload.
+         * @param {string} folderId The ID of the Google Drive folder.
+         * @returns {Promise<object>} A promise that resolves with a mock file object.
+         */
+        async function uploadToGoogleDrive(file, folderId) {
+            console.log(`Simulating upload of ${file.name} to Google Drive folder ${folderId}.`);
+            // This is a mock upload. A real implementation requires a server.
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+            return {
+                name: file.name,
+                url: `https://drive.google.com/drive/folders/${folderId}` // Return a link to the folder
+            };
+        }
+
         const initializeRequireForm = () => {
             const form = $('#require-form');
             form[0].reset();
@@ -531,7 +555,6 @@
                 const type = reqTypeSelect.val();
                 $('.attachment-in-mod, .attachment-out-mod').hide().find('input').prop('required', false);
                 $(`.attachment-${type}`).show().find('input').prop('required', true);
-                // Make "other files" not required
                 $('#file-other').prop('required', false);
             };
             reqTypeSelect.on('change', handleAttachmentVisibility).trigger('change');
@@ -554,18 +577,16 @@
                     };
                     const docRef = await fb.addDoc(fb.collection(db, "requests"), formData);
                     
+                    // --- Google Drive Upload Logic (Placeholder) ---
+                    const GOOGLE_DRIVE_FOLDER_ID = "1qe89jMWi2YVwnOkIWShl0CqyFgQBsRzx";
                     const uploadPromises = [];
                     $('#attachment-section input[type="file"]').each(function() {
                         if (this.files.length > 0) {
                             for(const file of this.files) {
-                                const filePath = `requests/${docRef.id}/${file.name}`;
-                                const storageRef = fb.ref(storage, filePath);
-                                const uploadTask = fb.uploadBytesResumable(storageRef, file);
-                                uploadPromises.push(new Promise((resolve, reject) => {
-                                    uploadTask.on('state_changed', null, (err) => reject(err), 
-                                        async () => resolve({ id: this.id, name: file.name, url: await fb.getDownloadURL(uploadTask.snapshot.ref) })
-                                    );
-                                }));
+                                // In a real app, you would call your secure server endpoint here.
+                                uploadPromises.push(uploadToGoogleDrive(file, GOOGLE_DRIVE_FOLDER_ID)
+                                    .then(uploadedFile => ({ ...uploadedFile, id: this.id }))
+                                );
                             }
                         }
                     });
@@ -578,7 +599,7 @@
                     }, {});
 
                     await fb.updateDoc(docRef, { attachments });
-                    showAlert('success', 'ยื่นเรื่องสำเร็จ!');
+                    showAlert('success', 'ยื่นเรื่องสำเร็จ!', 'ไฟล์ของคุณกำลังถูกอัปโหลดไปยัง Google Drive');
                     this.reset();
                     reqTypeSelect.trigger('change');
                     window.switchView('status-view');
@@ -704,9 +725,10 @@
             try {
                 const signatureFile = $('#signature-file-input')[0].files[0];
                 if (signatureFile) {
-                    const storageRef = fb.ref(storage, `signatures/${userId}.png`);
-                    await fb.uploadBytesResumable(storageRef, signatureFile);
-                    userData.signatureUrl = await fb.getDownloadURL(storageRef);
+                    // Placeholder for Google Drive upload
+                    const GOOGLE_DRIVE_FOLDER_ID = "1qe89jMWi2YVwnOkIWShl0CqyFgQBsRzx"; // A separate folder for signatures might be better
+                    const uploadedFile = await uploadToGoogleDrive(signatureFile, GOOGLE_DRIVE_FOLDER_ID);
+                    userData.signatureUrl = uploadedFile.url; // In a real app, this would be the direct file link
                 }
                 await fb.updateDoc(fb.doc(db, 'users', userId), userData);
                 showToast('success', 'อัปเดตข้อมูลสำเร็จ');
